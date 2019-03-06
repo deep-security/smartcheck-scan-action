@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "target": "es2017",
+    "lib": ["esnext"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "allowJs": true,
+    // adds "use strict" to the top of files
+    "alwaysStrict": true,
+    "outDir": "./build"
+  },
+  "exclude": ["node_modules"],
+  "include": ["index.ts", "src/**/*.ts"]
+}
