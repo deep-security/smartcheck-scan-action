@@ -1,0 +1,56 @@
+{
+  "name": "scan-action",
+  "version": "1.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "main": "build/index.js",
+  "scripts": {
+    "checkFormat": "prettier --list-different '**/*.{js,jsx,ts,tsx,html,vue,css,less,scss,graphql,yaml,yml,json,md,mdx}' ",
+    "format": "prettier --write '**/*.{js,jsx,ts,tsx,html,vue,css,less,scss,graphql,yaml,yml,json,md,mdx}' ",
+    "lint": "eslint --ext .js,.ts .",
+    "test": "jest",
+    "build": "microbundle build --strict --target node --format cjs",
+    "dev": "ts-node -O '{\"module\": \"commonjs\"}' --files src/index.ts"
+  },
+  "devDependencies": {
+    "@graham42/prettier-config": "^1.3.2",
+    "@types/axios": "^0.14.0",
+    "@types/jest": "^24.0.11",
+    "@types/node": "^11.10.5",
+    "@types/yargs": "^12.0.9",
+    "@typescript-eslint/eslint-plugin": "^1.4.2",
+    "@typescript-eslint/parser": "^1.4.2",
+    "eslint": "^5.15.1",
+    "eslint-config-prettier": "^4.1.0",
+    "eslint-plugin-jest": "^22.3.2",
+    "husky": "^1.3.1",
+    "jest": "^24.5.0",
+    "lint-staged": "^8.1.5",
+    "microbundle": "^0.11.0",
+    "prettier": "^1.16.4",
+    "ts-jest": "^24.0.0",
+    "ts-node": "^8.0.2",
+    "typescript": "^3.3.3333"
+  },
+  "dependencies": {
+    "@types/execa": "^0.9.0",
+    "axios": "^0.18.0",
+    "execa": "^1.0.0",
+    "winston": "^3.2.1",
+    "yargs": "^13.2.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "prettier --list-different",
+      "eslint --ext .js,.jsx,.ts,.tsx"
+    ],
+    "*.{json,css,md,html,yaml,yml}": [
+      "prettier --list-different"
+    ]
+  }
+}
