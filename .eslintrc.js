@@ -5,7 +5,8 @@ module.exports = {
   },
   extends: ["eslint:recommended", "prettier"],
   rules: {
-    "no-console": "off",
+    "no-var": "error",
+    eqeqeq: ["error", "always"],
   },
 
   overrides: [
@@ -38,6 +39,19 @@ module.exports = {
         ],
         "@typescript-eslint/camelcase": "warn",
         "@typescript-eslint/no-use-before-define": "warn",
+      },
+    },
+    {
+      files: ["**/__tests__/**/*", "**/__mocks__/**/*"],
+      plugins: ["jest"],
+      env: {
+        // Bugged, see https://github.com/jest-community/eslint-plugin-jest/issues/128
+        // "jest/globals": true,
+        // This list isn't as complete but should work for now
+        jest: true,
+      },
+      rules: {
+        "no-console": "off",
       },
     },
   ],

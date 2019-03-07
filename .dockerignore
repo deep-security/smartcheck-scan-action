@@ -1,0 +1,10 @@
+.git/
+.gitignore
+build/
+README.md
+Dockerfile*
+*.log
+**/*.swp
+node_modules/
+scan-results.json
+coverage/

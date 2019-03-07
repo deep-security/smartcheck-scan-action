@@ -1,8 +1,8 @@
 import * as yargs from "yargs";
 
-import { helloCommand } from "./src/hello";
+import { scanCommand } from "./scan";
 
 yargs
-  .command(helloCommand)
+  .command(scanCommand)
   .demandCommand()
   .help().argv;

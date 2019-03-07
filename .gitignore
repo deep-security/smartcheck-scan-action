@@ -80,3 +80,8 @@ typings/
 .dynamodb/
 
 build/
+
+#rollup build cache
+/.r*/
+
+scan-results.json
