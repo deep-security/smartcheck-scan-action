@@ -102,12 +102,13 @@ async function run(
     logger.info(`< ${stdout}`);
   } catch (error) {
     if (error.timedOut) {
-      logger.error(`< ${error.message.trim()}: timed out`);
-      process.exit(1);
+      throw new Error(`< ${error.message.trim()}: timed out`);
     }
 
-    logger.error(`< ${error.message.trim()}`);
-    process.exit(error.code);
+    // previously this exited with the error code, but that makes the
+    // Docker error codes leak into our interface, which isn't particularly
+    // desirable. We'll consider any docker error an internal error.
+    throw new Error(`< ${error.message.trim()}`);
   }
 }
 
@@ -127,4 +128,8 @@ export async function tag(fromImageName: string, toImageName: string) {
 
 export async function push(imageName: string) {
   return run("docker", ["push", imageName]);
+}
+
+export async function deleteImageTag(imageName: string) {
+  return run("docker", ["rmi", imageName]);
 }

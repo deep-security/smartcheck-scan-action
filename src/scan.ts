@@ -353,160 +353,180 @@ export const scanCommand: CommandModule<Argv, ScanCommandArgs> = {
       });
   },
   handler: async (args: ScanCommandArgs) => {
-    if (args["preregistry-scan"]) {
-      if (!args["preregistry-host"]) {
-        args["preregistry-host"] = `${
-          calculateSmartcheckBaseURL(args["smartcheck-host"]).hostname
-        }:5000`;
-      }
+    // Keep track of the created image tag (if we create one) so we can clean it up later
+    let taggedAs = null;
 
-      if (args["preregistry-user"] && args["preregistry-password"]) {
-        await docker.login(
+    // We can't call process.exit() until we've finished handling any `finally` blocks, so keep
+    // track of the desired exit code here.
+    let exitCode = 0;
+
+    try {
+      if (args["preregistry-scan"]) {
+        if (!args["preregistry-host"]) {
+          args["preregistry-host"] = `${
+            calculateSmartcheckBaseURL(args["smartcheck-host"]).hostname
+          }:5000`;
+        }
+
+        if (args["preregistry-user"] && args["preregistry-password"]) {
+          await docker.login(
+            args["preregistry-host"],
+            args["preregistry-user"],
+            args["preregistry-password"],
+          );
+        }
+
+        const preregistryImageName = docker.rename(
+          args["image-name"],
           args["preregistry-host"],
-          args["preregistry-user"],
-          args["preregistry-password"],
         );
+
+        await docker.tag(args["image-name"], preregistryImageName);
+        taggedAs = preregistryImageName;
+
+        await docker.push(preregistryImageName);
+
+        args["image-name"] = preregistryImageName;
+
+        // TODO provide the Deep Security Smart Check certificate as the registry certificate
+        args["insecure-skip-registry-tls-verify"] = true;
+
+        args["image-pull-auth"] = {
+          username: args["preregistry-user"],
+          password: args["preregistry-password"],
+        };
       }
 
-      const preregistryImageName = docker.rename(
-        args["image-name"],
-        args["preregistry-host"],
-      );
+      const smartcheckBaseURL = calculateSmartcheckBaseURL(
+        args["smartcheck-host"],
+      ).toString();
 
-      await docker.tag(args["image-name"], preregistryImageName);
-      await docker.push(preregistryImageName);
+      const axiosInstance = axios.create({
+        httpsAgent: new https.Agent({
+          // ignore https self signed certs
+          rejectUnauthorized: args["insecure-skip-tls-verify"] ? false : true,
+        }),
+        headers: {
+          "X-Api-Version": "2018-05-01",
+          "User-Agent": USER_AGENT,
+        },
+      });
+      axiosInstance.interceptors.response.use(undefined, error => {
+        logger.error(`Request failed: ${error.message}`);
+        throw new Error(`Request failed: ${error.message}`);
+      });
 
-      args["image-name"] = preregistryImageName;
-
-      // TODO provide the Deep Security Smart Check certificate as the registry certificate
-      args["insecure-skip-registry-tls-verify"] = true;
-
-      args["image-pull-auth"] = {
-        username: args["preregistry-user"],
-        password: args["preregistry-password"],
+      // Login
+      logger.info("Logging in...");
+      const authBody: SmartCheck.CreateSession.Parameters.Request = {
+        user: {
+          userID: args["smartcheck-user"],
+          password: args["smartcheck-password"],
+        },
       };
-    }
-
-    const smartcheckBaseURL = calculateSmartcheckBaseURL(
-      args["smartcheck-host"],
-    ).toString();
-
-    const axiosInstance = axios.create({
-      httpsAgent: new https.Agent({
-        // ignore https self signed certs
-        rejectUnauthorized: args["insecure-skip-tls-verify"] ? false : true,
-      }),
-      headers: {
-        "X-Api-Version": "2018-05-01",
-        "User-Agent": USER_AGENT,
-      },
-    });
-    axiosInstance.interceptors.response.use(undefined, error => {
-      logger.error(`Request failed: ${error.message}`);
-      process.exit(1);
-    });
-
-    // Login
-    logger.info("Logging in...");
-    const authBody: SmartCheck.CreateSession.Parameters.Request = {
-      user: {
-        userID: args["smartcheck-user"],
-        password: args["smartcheck-password"],
-      },
-    };
-    const authResponse = await axiosInstance.post(`/api/sessions`, authBody, {
-      baseURL: smartcheckBaseURL,
-    });
-    if (authResponse.status < 200 || authResponse.status > 299) {
-      logger.error("Failed to login");
-      process.exit(1);
-      return;
-    }
-    logger.info("Logged in");
-    const session: SmartCheck.Session = authResponse.data;
-
-    const apiHeaders = {
-      Authorization: `Bearer ${session.token}`,
-    };
-
-    // create scan
-    logger.info("Creating scan...");
-    const createScanBody: SmartCheck.ScanRequest = {
-      source: {
-        type: "docker",
-        ...parseDockerImageName(args["image-name"]),
-      },
-    };
-    if (args["insecure-skip-registry-tls-verify"]) {
-      createScanBody.source.insecureSkipVerify =
-        args["insecure-skip-registry-tls-verify"];
-    }
-    if (args["image-pull-auth"]) {
-      createScanBody.source.credentials = args["image-pull-auth"];
-    }
-
-    const createScanResponse = await axiosInstance.post(
-      `/api/scans`,
-      createScanBody,
-      { headers: apiHeaders, baseURL: smartcheckBaseURL },
-    );
-    if (createScanResponse.status < 200 || createScanResponse.status > 299) {
-      logger.error("Failed to create scan");
-      process.exit(1);
-      return;
-    }
-
-    logger.info("Scan started.");
-    let scan: SmartCheck.Scan = createScanResponse.data;
-
-    // poll until finished
-    while (scanIsRunning(scan)) {
-      await sleep(5000);
-      logger.info("Checking scan status...");
-      const getScanResponse = await axiosInstance.get(scan.href, {
-        headers: apiHeaders,
+      const authResponse = await axiosInstance.post(`/api/sessions`, authBody, {
         baseURL: smartcheckBaseURL,
       });
-      if (getScanResponse.status < 200 || getScanResponse.status > 299) {
-        logger.error("Failed to get scan");
-        process.exit(1);
-        return;
+      if (authResponse.status < 200 || authResponse.status > 299) {
+        throw new Error("Failed to log in to Deep Security Smart Check");
       }
-      scan = getScanResponse.data;
-    }
+      logger.info("Logged in");
+      const session: SmartCheck.Session = authResponse.data;
 
-    logger.info(`scan finished with status: ${scan.status}`);
+      const apiHeaders = {
+        Authorization: `Bearer ${session.token}`,
+      };
 
-    if (!args["results-file"]) {
-      await writeToStdout(JSON.stringify(scan, null, 4));
-    } else {
-      try {
-        fs.writeFileSync(args["results-file"], JSON.stringify(scan, null, 4), {
-          encoding: "utf8",
+      // create scan
+      logger.info("Creating scan...");
+      const createScanBody: SmartCheck.ScanRequest = {
+        source: {
+          type: "docker",
+          ...parseDockerImageName(args["image-name"]),
+        },
+      };
+      if (args["insecure-skip-registry-tls-verify"]) {
+        createScanBody.source.insecureSkipVerify =
+          args["insecure-skip-registry-tls-verify"];
+      }
+      if (args["image-pull-auth"]) {
+        createScanBody.source.credentials = args["image-pull-auth"];
+      }
+
+      const createScanResponse = await axiosInstance.post(
+        `/api/scans`,
+        createScanBody,
+        { headers: apiHeaders, baseURL: smartcheckBaseURL },
+      );
+      if (createScanResponse.status < 200 || createScanResponse.status > 299) {
+        throw new Error("Failed to create scan");
+      }
+
+      logger.info("Scan started.");
+      let scan: SmartCheck.Scan = createScanResponse.data;
+
+      // poll until finished
+      while (scanIsRunning(scan)) {
+        await sleep(5000);
+        logger.info("Checking scan status...");
+        const getScanResponse = await axiosInstance.get(scan.href, {
+          headers: apiHeaders,
+          baseURL: smartcheckBaseURL,
         });
-      } catch (error) {
-        logger.error("Could not write results file.");
-        if (error.message) {
-          logger.error(error.message);
+        if (getScanResponse.status < 200 || getScanResponse.status > 299) {
+          throw new Error("Failed to get scan");
         }
-        process.exit(1);
-        return;
+        scan = getScanResponse.data;
       }
-    }
 
-    // Check thresholds
-    if (doFindingsExceedThreshold(scan, args["findings-threshold"])) {
-      process.exit(2);
-      return;
-    } else if (scan.status === "failed") {
-      const statusMessage = scan.details ? scan.details.detail : "";
-      logger.error(`Scan failed: ${statusMessage}`);
-      process.exit(1);
-      return;
+      logger.info(`scan finished with status: ${scan.status}`);
+
+      if (!args["results-file"]) {
+        await writeToStdout(JSON.stringify(scan, null, 4));
+      } else {
+        try {
+          fs.writeFileSync(
+            args["results-file"],
+            JSON.stringify(scan, null, 4),
+            {
+              encoding: "utf8",
+            },
+          );
+        } catch (error) {
+          throw new Error(
+            error.message
+              ? "Could not write results file: " + error.message
+              : "Could not write results file.",
+          );
+        }
+      }
+
+      // Check thresholds
+      if (doFindingsExceedThreshold(scan, args["findings-threshold"])) {
+        throw 2; // this is not an Error so will result in setting exitCode=2
+      } else if (scan.status === "failed") {
+        throw new Error(
+          scan.details && scan.details.detail
+            ? "Scan failed: ${scan.details.detail}"
+            : "Scan failed.",
+        );
+      }
+    } catch (e) {
+      if (e instanceof Error) {
+        logger.error(e.message);
+        exitCode = 1;
+      } else {
+        exitCode = 2;
+      }
+    } finally {
+      // If we created an image tag then delete it here to clean up
+      if (taggedAs !== null) {
+        await docker.deleteImageTag(taggedAs);
+      }
     }
 
     // This is mostly redundant but improves the testability
-    process.exit(0);
+    process.exit(exitCode);
     return;
   },
 };

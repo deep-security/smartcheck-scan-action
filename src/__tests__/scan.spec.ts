@@ -253,7 +253,7 @@ describe("scan command", () => {
       expect(mockExit).toHaveBeenCalledTimes(1);
       expect(mockExit).toHaveBeenCalledWith(1);
       expect(mockErrorLog).toHaveBeenCalledWith(
-        expect.stringMatching(/Failed to login/),
+        expect.stringMatching(/Failed to log in/),
       );
     });
   });
