@@ -8,6 +8,7 @@ RUN npm install --quiet
 COPY . /code/
 
 RUN npm run build
+RUN npm run test
 
 ################################################################################
 FROM node:10-alpine as prod-install
