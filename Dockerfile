@@ -1,5 +1,5 @@
 # This target exists to enable targeted building for running tests
-FROM node:10-alpine as builder
+FROM node:10-alpine@sha256:313c5c88acc0ec12a9abca9a83719065dfd54e94ffc56464b7ce24998dd2838d as builder
 WORKDIR /code
 # keep package.json separate so that we can cache the npm install step more often
 COPY package*.json /code/
@@ -11,14 +11,14 @@ RUN npm run build
 RUN npm run test
 
 ################################################################################
-FROM node:10-alpine as prod-install
+FROM node:10-alpine@sha256:313c5c88acc0ec12a9abca9a83719065dfd54e94ffc56464b7ce24998dd2838d as prod-install
 WORKDIR /app/
 COPY --from=builder /code/package*.json /app/
 RUN npm install --production
 COPY --from=builder /code/build/ /app/dist/
 
 ################################################################################
-FROM node:10-alpine as docker-install
+FROM node:10-alpine@sha256:313c5c88acc0ec12a9abca9a83719065dfd54e94ffc56464b7ce24998dd2838d as docker-install
 
 RUN apk update && \
     apk add curl
@@ -31,7 +31,7 @@ RUN curl -L -o /tmp/docker-$VERSION.tgz https://download.docker.com/linux/static
     && mv docker/docker /usr/bin
 
 ################################################################################
-FROM node:10-alpine
+FROM node:10-alpine@sha256:313c5c88acc0ec12a9abca9a83719065dfd54e94ffc56464b7ce24998dd2838d
 
 # See GitHub Action label docs
 # https://developer.github.com/actions/creating-github-actions/creating-a-docker-container/#label
