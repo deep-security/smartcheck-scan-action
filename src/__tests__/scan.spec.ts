@@ -145,6 +145,64 @@ describe("scan command", () => {
     });
   });
 
+  describe("input validation", () => {
+    const commonParameters: string[] = [
+      "--smartcheck-host=test-smartcheck.example.com",
+      "--smartcheck-user=test",
+      "--smartcheck-password=test",
+      "--image-name=example.com/foo-image",
+    ];
+    const dataSet: {
+      name: string;
+      parameters: string[];
+      checker: (results: any) => void;
+    }[] = [
+      {
+        name: "should error for invalid JSON in image-pull-auth",
+        parameters: [...commonParameters, "--image-pull-auth", "abc"],
+        checker: function(results: any) {
+          expect(results.err.message).toMatch(/Failed to parse JSON/);
+        },
+      },
+      {
+        name: "should error for invalid argument",
+        parameters: [
+          ...commonParameters,
+          "image-pull-auth=abc", // missing -- on --image-pull-auth
+        ],
+        checker: function(results: any) {
+          expect(results.err).toMatch(/Unknown argument: image-pull-auth=abc$/);
+        },
+      },
+      {
+        name: "should error for multiple invalid parameters",
+        parameters: [...commonParameters, "foo", "bar"],
+        checker: function(results: any) {
+          expect(results.err).toMatch(/Unknown arguments: foo, bar$/);
+        },
+      },
+      {
+        name: "should error for unrecognized parameters",
+        parameters: [...commonParameters, "-foo", "--bar"],
+        checker: function(results: any) {
+          expect(results.err.message).toMatch(/Unknown arguments: f, o, bar$/);
+        },
+      },
+    ];
+    dataSet.forEach(testData => {
+      test(`${testData.name}`, () => {
+        let results: any;
+        yargs
+          .command(scanCommand)
+          .parse(testData.parameters, {}, (err, argv, output) => {
+            // jest / ts-jest doesn't do well with assertions in callbacks
+            results = { err, argv, output };
+          });
+        testData.checker(results);
+      });
+    });
+  });
+
   describe("findings threshold input validation", () => {
     const thresholdData: {
       threshold: any;

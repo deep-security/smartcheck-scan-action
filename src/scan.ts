@@ -350,7 +350,18 @@ export const scanCommand: CommandModule<Argv, ScanCommandArgs> = {
         description:
           "The user name for pushing the image for pre-registry scanning.",
         type: "string",
-      });
+      })
+      .check(function(argv, options) {
+        switch (argv._.length) {
+          case 0:
+            return true;
+          case 1:
+            throw "Unknown argument: " + argv._.join(", ");
+          default:
+            throw "Unknown arguments: " + argv._.join(", ");
+        }
+      })
+      .strict(true);
   },
   handler: async (args: ScanCommandArgs) => {
     // Keep track of the created image tag (if we create one) so we can clean it up later
