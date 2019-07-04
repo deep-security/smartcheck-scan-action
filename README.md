@@ -198,6 +198,11 @@ a port other than 5000, you will also need to provide the `preregistry-host`
 parameter, specifying the hostname and port number where you are running the
 temporary registry.
 
+**IMPORTANT:** The pre-registry scan needs access to the Docker daemon through
+the Docker socket, so if you are running the scan action as a container, make
+sure to mount `/var/run/docker.sock`. If you are using `smartcheck-scan-action`
+as a GitHub Action, the runtime environment will do this step for you.
+
 ## Contributing
 
 If you encounter a bug, think of a useful feature, or find something confusing
