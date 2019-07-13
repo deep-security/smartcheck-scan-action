@@ -1,4 +1,4 @@
 # we don't want to see generated files as part of diffs and code reviews
-package-lock.json -diff
+package-lock.json -diff linguist-generated=true
 # This is a generated file for this project
-src/types/smartcheck-api.d.ts -diff
+src/types/smartcheck-api.d.ts -diff linguist-generated=true
