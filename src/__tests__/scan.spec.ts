@@ -127,7 +127,7 @@ describe("scan command", () => {
         );
         if (testData.shouldThrow) {
           expect(results.err.message).toMatch(
-            /Unexpected format|Failed to parse JSON/,
+            /Unexpected format|Failed to read/,
           );
         } else {
           expect(results.err).toBeNull();
@@ -161,7 +161,7 @@ describe("scan command", () => {
         name: "should error for invalid JSON in image-pull-auth",
         parameters: [...commonParameters, "--image-pull-auth", "abc"],
         checker: function(results: any) {
-          expect(results.err.message).toMatch(/Failed to parse JSON/);
+          expect(results.err.message).toMatch(/Failed to read image-pull-auth/);
         },
       },
       {

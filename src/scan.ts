@@ -253,7 +253,7 @@ export const scanCommand: CommandModule<Argv, ScanCommandArgs> = {
             const credentials: SmartCheck.Credentials = JSON.parse(opt);
             return credentials;
           } catch (err) {
-            throw new Error("Failed to parse JSON for image-pull-auth");
+            throw new Error("Failed to read image-pull-auth: " + err);
           }
         },
       })
@@ -303,7 +303,7 @@ export const scanCommand: CommandModule<Argv, ScanCommandArgs> = {
           try {
             inputJSON = JSON.parse(opt);
           } catch (err) {
-            throw new Error("Failed to parse JSON for findings-threshold");
+            throw new Error("Failed to read findings-threshold: " + err);
           }
           if (isFindingsThreshold(inputJSON)) {
             return inputJSON;
