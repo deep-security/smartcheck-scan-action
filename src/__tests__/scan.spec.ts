@@ -257,7 +257,7 @@ describe("scan command", () => {
       test(`should${
         testData.shouldThrow ? "" : " not"
       } throw for ${JSON.stringify(testData.threshold)}`, () => {
-        const buff = new Buffer(JSON.stringify(testData.threshold));
+        const buff = Buffer.from(JSON.stringify(testData.threshold));
         const base64data = buff.toString("base64");
         let results: any;
         yargs
