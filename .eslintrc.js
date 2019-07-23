@@ -7,6 +7,7 @@ module.exports = {
   rules: {
     "no-var": "error",
     eqeqeq: ["error", "always"],
+    "no-template-curly-in-string": "error",
   },
 
   overrides: [
