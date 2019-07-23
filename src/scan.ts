@@ -518,7 +518,7 @@ export const scanCommand: CommandModule<Argv, ScanCommandArgs> = {
       } else if (scan.status === "failed") {
         throw new Error(
           scan.details && scan.details.detail
-            ? "Scan failed: ${scan.details.detail}"
+            ? `Scan failed: ${scan.details.detail}`
             : "Scan failed.",
         );
       }
