@@ -145,7 +145,7 @@ describe("rename", () => {
       name: "blank registry name",
       imageName: "sample",
       registryHost: "",
-      expected: "docker.io/sample:latest",
+      expected: "sample:latest",
     },
   ];
 

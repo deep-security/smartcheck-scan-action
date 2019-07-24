@@ -56,9 +56,13 @@ export function parseReference(ref: string) {
 }
 
 function referenceToString(image: Image): string {
-  let fullName = image.domain || "docker.io";
+  let fullName;
 
-  fullName += "/" + image.path;
+  if (image.domain) {
+    fullName = image.domain + "/" + image.path;
+  } else {
+    fullName = image.path;
+  }
 
   if (image.tag) {
     fullName += ":" + image.tag;
