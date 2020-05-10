@@ -9,7 +9,7 @@ This tool is used by the Deep Security Smart Check plugin for [Jenkins](https://
 ## Requirements
 
 * Have an [Deep Security Smart Check](https://www.trendmicro.com/smartcheck) deployed. [Sign up for free trial now](https://www.trendmicro.com/product_trials/download/index/us/168) if it's not already the case!
-* A container image to scan in any Docker Registry.
+* A container image to scan in any [supported Docker Registry](https://deep-security.github.io/smartcheck-docs/admin_docs/admin.html#supported-registries).
 
 ## Usage
 
