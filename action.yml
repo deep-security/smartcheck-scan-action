@@ -1,0 +1,64 @@
+name: "Deep Security Smart Check"
+description: "Scan container images with Deep Security Smart Check."
+inputs:
+  DSSC_IMAGE_NAME:
+    description: "Container repository, eg myorg/myimage."
+    required: true
+  DSSC_SMARTCHECK_HOST:
+    description: "Deep Security Smart Check url, eg mydomain.com."
+    required: true
+  DSSC_SMARTCHECK_USER:
+    description: "Deep Security Smart Check username, eg admin."
+    required: true
+  DSSC_SMARTCHECK_PASSWORD:
+    description: (MANDATORY) Deep Security Smart Check password, eg 12345.
+    required: true
+  DSSC_IMAGE_PULL_AUTH:
+    description: (MANDATORY) Container registry credentials in a json format,  eg '{"username":"<user>","password":"<password>"}' or {"aws":{"region":"us-east-1","accessKeyID":"'AWS_ACCESS_KEY_ID'","secretAccessKey":"'AWS_SECRET_ACCESS_KEY'"}}'
+    required: true
+  DSSC_INSECURE_SKIP_TLS_VERIFY:
+    description: (OPTIONAL) If the client should ignore certificate errors when connecting to Deep Security Smart Check. You may want to set this if you've configured a self signed cert. eg true
+    required: false
+    default: "true"
+  DSSC_INSECURE_SKIP_REGISTRY_TLS_VERIFY:
+    description: (OPTIONAL) If Deep Security Smart Check should ignore certificate errors from the image registry. eg true
+    required: false
+    default: "true"
+  DSSC_PREREGISTRY_SCAN:
+    description: (OPTIONAL) Specify this option to trigger a "pre-registry scan", which pushes the image to a temporary registry on the scan system.
+    required: false
+  DSSC_PREREGISTRY_HOST:
+    description: (OPTIONAL) The hostname of the temporary registry. Defaults to the smartcheck-host on port 5000.
+    required: false
+  DSSC_PREREGISTRY_USER:
+    description: (OPTIONAL) The username to authenticate with the temporary registry.
+    required: false
+  DSSC_PREREGISTRY_PASSWORD:
+    description: (OPTIONAL) The password to authenticate with the temporary registry.
+    required: false
+  DSSC_RESULTS_FILE:
+    description: (OPTIONAL) The path to write the scan results to. If not provided, the scan results will be written to stdout.
+    required: false
+  DSSC_FINDINGS_THRESHOLD:
+    description: (OPTIONAL) A JSON object that can be used to fail this step if an image contains findings that exceed the threshold.
+    required: false
+branding:
+  icon: "check"
+  color: "red"
+runs:
+  using: "docker"
+  image: "docker://deepsecurity/smartcheck-scan-action:latest"
+  env:
+    DSSC_IMAGE_NAME: ${{ inputs.DSSC_IMAGE_NAME }}
+    DSSC_SMARTCHECK_HOST: ${{ inputs.DSSC_SMARTCHECK_HOST }}
+    DSSC_SMARTCHECK_USER: ${{ inputs.DSSC_SMARTCHECK_USER }}
+    DSSC_SMARTCHECK_PASSWORD: ${{ inputs.DSSC_SMARTCHECK_PASSWORD }}
+    DSSC_IMAGE_PULL_AUTH: ${{ inputs.DSSC_IMAGE_PULL_AUTH }}
+    DSSC_INSECURE_SKIP_TLS_VERIFY: ${{ inputs.DSSC_INSECURE_SKIP_TLS_VERIFY }}
+    DSSC_INSECURE_SKIP_REGISTRY_TLS_VERIFY: ${{ inputs.DSSC_INSECURE_SKIP_REGISTRY_TLS_VERIFY }}
+    DSSC_PREREGISTRY_SCAN: ${{ inputs.DSSC_PREREGISTRY_SCAN }}
+    DSSC_PREREGISTRY_HOST: ${{ inputs.DSSC_PREREGISTRY_HOST }}
+    DSSC_PREREGISTRY_USER: ${{ inputs.DSSC_PREREGISTRY_USER }}
+    DSSC_PREREGISTRY_PASSWORD: ${{ inputs.DSSC_PREREGISTRY_PASSWORD }}
+    DSSC_RESULTS_FILE: ${{ inputs.DSSC_RESULTS_FILE }}
+    DSSC_FINDINGS_THRESHOLD: ${{ inputs.DSSC_FINDINGS_THRESHOLD }}
