@@ -177,6 +177,8 @@ jobs:
     SmartCheck-Scan-Action:
        runs-on: ubuntu-latest
        steps:
+       
+       # AWS Example:
         - name: Deep Security Smart Check Scan ECR
           uses: deepsecurity/Deep-Security-Smart-Check@version*
           with:
@@ -188,6 +190,8 @@ jobs:
             DSSC_FINDINGS_THRESHOLD: '{"malware": 999, "vulnerabilities": { "defcon1": 999, "critical": 999, "high": 999 }, "contents": { "defcon1": 999, "critical": 999, "high": 999 }, "checklists": { "defcon1": 999, "critical": 999, "high": 999 }}'
             DSSC_INSECURE_SKIP_TLS_VERIFY: true
             DSSC_INSECURE_SKIP_REGISTRY_TLS_VERIFY: true
+
+        # Azure Example:
         - name: Deep Security Smart Check Scan ACR
           uses: deepsecurity/Deep-Security-Smart-Check@version*
           with:
