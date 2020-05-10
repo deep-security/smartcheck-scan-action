@@ -177,7 +177,7 @@ jobs:
     SmartCheck-Scan-Action:
        runs-on: ubuntu-latest
        steps:
-       
+
        # AWS Example:
         - name: Deep Security Smart Check Scan ECR
           uses: deepsecurity/Deep-Security-Smart-Check@version*
@@ -221,8 +221,7 @@ jobs:
        steps:
         - name: Deep Security Smart Check
           run: |
-          docker run -v /var/run/docker.sock:/var/run/docker.sock deepsecurity/smartcheck-scan-action --image-name MYREGISTRY/MYIMAGE --smartcheck-host=DSSC_URL --smartcheck-user=DSSC_USER --smartcheck-password=DSSC_PASSSWORD --insecure-skip-tls-verify --insecure-skip-registry-tls-verify --image-pull-auth='{"aws":{"region":"us-east-1","accessKeyID":"'$AWS_ACCESS_KEY_ID'","secretAccessKey":"'$AWS_SECRET_ACCESS_KEY'"}}' --findings-threshold '{"malware": 100, "vulnerabilities": { "defcon1": 100, "critical": 100, "high": 100 }, "contents": { "defcon1": 100, "critical": 100, "high": 100 }, "checklists": { "defcon1": 100, "critical": 100, "high": 100 }}'
-          
+          docker run -v /var/run/docker.sock:/var/run/docker.sock deepsecurity/smartcheck-scan-action --image-name MYREGISTRY/MYIMAGE --smartcheck-host=DSSC_URL --smartcheck-user=DSSC_USER --smartcheck-password=DSSC_PASSSWORD --insecure-skip-tls-verify --insecure-skip-registry-tls-verify --image-pull-auth='{"aws":{"region":"us-east-1","accessKeyID":"'$AWS_ACCESS_KEY_ID'","secretAccessKey":"'$AWS_SECRET_ACCESS_KEY'"}}' --findings-threshold '{"malware": 100, "vulnerabilities": { "defcon1": 100, "critical": 100, "high": 100 }, "contents": { "defcon1": 100, "critical": 100, "high": 100 }, "checklists": { "defcon1": 100, "critical": 100, "high": 100 }}'       
 ```
 
 ## Pre-registry scanning
