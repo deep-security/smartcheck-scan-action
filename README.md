@@ -1,30 +1,41 @@
 # Deep Security Smart Check Scan Action
 
-For scanning your images as part of your CI pipeline using [Deep Security Smart
-Check][].
+<img src="Trend-Micro-Logo.png">
 
-[deep security smart check]: https://www.trendmicro.com/smartcheck
+## Scan your containers with [Deep Security Smart Check](https://www.trendmicro.com/smartcheck).
 
-This tool is used by the Deep Security Smart Check plugin for Jenkins and can
-also be used as a [GitHub Action](https://github.com/features/actions).
+This tool is used by the Deep Security Smart Check plugin for [Jenkins](https://plugins.jenkins.io/deepsecurity-smartcheck/) and can also be used as a [GitHub Action](https://github.com/features/actions).
+
+## Requirements
+
+* Have an [Deep Security Smart Check](https://www.trendmicro.com/smartcheck) deployed. [Sign up for free trial now](https://www.trendmicro.com/product_trials/download/index/us/168) if it's not already the case!
+* A container image to scan in any [supported Docker Registry](https://deep-security.github.io/smartcheck-docs/admin_docs/admin.html#supported-registries).
 
 ## Usage
 
-Add an Action in your `main.workflow` file to scan your image with Deep Security
+Add an Action in your `.github/workflow` yml file to scan your image with Deep Security
 Smart Check.
 
-```main.workflow
-action "Scan with Deep Security Smart Check" {
-  needs = "Push image to GCR"
-  uses = "docker://deepsecurity/smartcheck-scan-action"
-  secrets = [
-    "DSSC_SMARTCHECK_HOST",
-    "DSSC_SMARTCHECK_USER",
-    "DSSC_SMARTCHECK_PASSWORD",
-    "DSSC_IMAGE_PULL_AUTH"
-  ]
-  args = ["--image-name registry.example.com/my-project/my-image"]
-}
+```yml
+- name: Deep Security Smart Check
+  uses: deepsecurity/Deep-Security-Smart-Check@version*
+   with:
+      # Mandatory
+      DSSC_IMAGE_NAME: myorg/myimage
+      DSSC_SMARTCHECK_HOST: myorg.com
+      DSSC_SMARTCHECK_USER: admin
+      DSSC_SMARTCHECK_PASSWORD: 12345
+      DSSC_IMAGE_PULL_AUTH: {"username":"<user>","password":"<password>"}
+
+      # Optional
+      DSSC_INSECURE_SKIP_TLS_VERIFY: true
+      DSSC_INSECURE_SKIP_REGISTRY_TLS_VERIFY: true
+      DSSC_PREREGISTRY_SCAN: false
+      DSSC_PREREGISTRY_HOST: myorg.com
+      DSSC_PREREGISTRY_USER: admin
+      DSSC_PREREGISTRY_PASSWORD: 12345
+      DSSC_RESULTS_FILE: /results.json
+      DSSC_FINDINGS_THRESHOLD: '{"malware": 100, "vulnerabilities": { "defcon1": 100, "critical": 100, "high": 100 }, "contents": { "defcon1": 100, "critical": 100, "high": 100 }, "checklists": { "defcon1": 100, "critical": 100, "high": 100 }}'    
 ```
 
 ### Parameters
@@ -56,7 +67,13 @@ be given with `DSSC_IMAGE_NAME`.
       "username": "<user>",
       "password": "<password>"
     }
+    ``` 
+  - If you're using AWS, you can use this example below: 
+
+    ```json
+    '{"aws":{"region":"us-east-1","accessKeyID":"'$AWS_ACCESS_KEY_ID'","secretAccessKey":"'$AWS_SECRET_ACCESS_KEY'"}}'
     ```
+  **PS.: ALWAYS use secrets to expose your credentials!**
 
     See [creating a scan][] in the [Deep Security Smart Check API Reference][]
     for additional registry credentials options.
@@ -146,47 +163,65 @@ be given with `DSSC_IMAGE_NAME`.
     }
     ```
 
-## Example Workflow
+## Example Workflow Using Github Actions
 
-```main.workflow
-workflow "Push image" {
-  on = "push"
-  resolves = "Scan with Deep Security Smart Check"
-}
+```yml
+name: Deep Security Smart Check
 
-action "Build image" {
-  uses = "docker://docker:stable"
-  args = ["build", "-t", "registry.example.com/my-project/my-image", "."]
-}
+on: 
+  push:
+    branches: 
+      - master
+      
+jobs:      
+    SmartCheck-Scan-Action:
+       runs-on: ubuntu-latest
+       steps:
 
-action "Docker Login" {
-  uses = "actions/docker/login@master"
-  env = {
-    DOCKER_REGISTRY_URL = "registry.example.com"
-  }
-  secrets = [
-    "DOCKER_USERNAME",
-    "DOCKER_PASSWORD"
-  ]
-}
+       # AWS Example:
+        - name: Deep Security Smart Check Scan ECR
+          uses: deepsecurity/Deep-Security-Smart-Check@version*
+          with:
+            DSSC_IMAGE_NAME: myECRrepo/myimage
+            DSSC_SMARTCHECK_HOST: ${{ secrets.DSSC_SMARTCHECK_HOST }}
+            DSSC_SMARTCHECK_USER: ${{ secrets.DSSC_SMARTCHECK_USER }}
+            DSSC_SMARTCHECK_PASSWORD: ${{ secrets.DSSC_SMARTCHECK_PASSWORD }}
+            DSSC_IMAGE_PULL_AUTH: ${{ secrets.DSSC_IMAGE_PULL_AUTH }}
+            DSSC_FINDINGS_THRESHOLD: '{"malware": 999, "vulnerabilities": { "defcon1": 999, "critical": 999, "high": 999 }, "contents": { "defcon1": 999, "critical": 999, "high": 999 }, "checklists": { "defcon1": 999, "critical": 999, "high": 999 }}'
+            DSSC_INSECURE_SKIP_TLS_VERIFY: true
+            DSSC_INSECURE_SKIP_REGISTRY_TLS_VERIFY: true
 
-action "Push image" {
-  needs = ["Build image", "Docker Login"]
-  uses = "actions/docker/cli@master"
-  args = "push registry.example.com/my-project/my-image"
-}
+        # Azure Example:
+        - name: Deep Security Smart Check Scan ACR
+          uses: deepsecurity/Deep-Security-Smart-Check@version*
+          with:
+            DSSC_IMAGE_NAME: myrepo.azurecr.io/myimage
+            DSSC_SMARTCHECK_HOST: ${{ secrets.DSSC_SMARTCHECK_HOST }}
+            DSSC_SMARTCHECK_USER: ${{ secrets.DSSC_SMARTCHECK_USER }}
+            DSSC_SMARTCHECK_PASSWORD: ${{ secrets.DSSC_SMARTCHECK_PASSWORD }}
+            DSSC_IMAGE_PULL_AUTH: '{"username": "${{ secrets.ACR_USER }}","password": "${{ secrets.ACR_PASSWORD }}"}'
+            DSSC_FINDINGS_THRESHOLD: '{"malware": 999, "vulnerabilities": { "defcon1": 999, "critical": 999, "high": 999 }, "contents": { "defcon1": 999, "critical": 999, "high": 999 }, "checklists": { "defcon1": 999, "critical": 999, "high": 999 }}'
+            DSSC_INSECURE_SKIP_TLS_VERIFY: true
+            DSSC_INSECURE_SKIP_REGISTRY_TLS_VERIFY: true
+```
 
-action "Scan with Deep Security Smart Check" {
-  needs = "Push image"
-  uses = "docker://deepsecurity/smartcheck-scan-action"
-  secrets = [
-    "DSSC_SMARTCHECK_HOST",
-    "DSSC_SMARTCHECK_USER",
-    "DSSC_SMARTCHECK_PASSWORD",
-    "DSSC_IMAGE_PULL_AUTH"
-  ]
-  args = ["--image-name registry.example.com/my-project/my-image"]
-}
+## Example Workflow Running a Docker Container
+
+```yml
+name: Deep Security Smart Check Pipeline Example
+
+on: 
+  push:
+    branches: 
+      - master
+      
+jobs:      
+    SmartCheck-Scan-Action:
+       runs-on: ubuntu-latest
+       steps:
+        - name: Deep Security Smart Check
+          run: |
+          docker run -v /var/run/docker.sock:/var/run/docker.sock deepsecurity/smartcheck-scan-action --image-name MYREGISTRY/MYIMAGE --smartcheck-host=DSSC_URL --smartcheck-user=DSSC_USER --smartcheck-password=DSSC_PASSSWORD --insecure-skip-tls-verify --insecure-skip-registry-tls-verify --image-pull-auth='{"aws":{"region":"us-east-1","accessKeyID":"'$AWS_ACCESS_KEY_ID'","secretAccessKey":"'$AWS_SECRET_ACCESS_KEY'"}}' --findings-threshold '{"malware": 100, "vulnerabilities": { "defcon1": 100, "critical": 100, "high": 100 }, "contents": { "defcon1": 100, "critical": 100, "high": 100 }, "checklists": { "defcon1": 100, "critical": 100, "high": 100 }}'       
 ```
 
 ## Pre-registry scanning
