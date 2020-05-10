@@ -18,7 +18,7 @@ Smart Check.
 
 ```yml
 - name: Deep Security Smart Check
-  uses: felipecosta09/Deep-Security-Smart-Check-Scan-Action@version*
+  uses: deepsecurity/Deep-Security-Smart-Check@version*
    with:
       # Mandatory
       DSSC_IMAGE_NAME: myorg/myimage
@@ -178,7 +178,7 @@ jobs:
        runs-on: ubuntu-latest
        steps:
         - name: Deep Security Smart Check Scan ECR
-          uses: felipecosta09/Deep-Security-Smart-Check-Scan-Action@v1.0.0
+          uses: deepsecurity/Deep-Security-Smart-Check@version*
           with:
             DSSC_IMAGE_NAME: myECRrepo/myimage
             DSSC_SMARTCHECK_HOST: ${{ secrets.DSSC_SMARTCHECK_HOST }}
@@ -189,7 +189,7 @@ jobs:
             DSSC_INSECURE_SKIP_TLS_VERIFY: true
             DSSC_INSECURE_SKIP_REGISTRY_TLS_VERIFY: true
         - name: Deep Security Smart Check Scan ACR
-          uses: felipecosta09/Deep-Security-Smart-Check-Scan-Action@v1.0.0
+          uses: deepsecurity/Deep-Security-Smart-Check@version*
           with:
             DSSC_IMAGE_NAME: myrepo.azurecr.io/myimage
             DSSC_SMARTCHECK_HOST: ${{ secrets.DSSC_SMARTCHECK_HOST }}
