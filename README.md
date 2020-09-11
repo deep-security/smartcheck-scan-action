@@ -4,7 +4,7 @@
 
 ## Scan your containers with [Deep Security Smart Check](https://www.trendmicro.com/smartcheck).
 
-This tool is used by the Deep Security Smart Check plugin for [Jenkins](https://plugins.jenkins.io/deepsecurity-smartcheck/) and can also be used as a [GitHub Action](https://github.com/features/actions).
+This project was built by the [Deep Security Smart Check](trendmicro.com/smartcheck) team to help you to scan your containers in your CI/CD pipeline, you can use as a standalone Docker container published in the [Dockerhub](https://hub.docker.com/r/deepsecurity/smartcheck-scan-action) to scan your images. This tool is also used by the [Deep Security Smart Check plugin for Jenkins](https://plugins.jenkins.io/deepsecurity-smartcheck/) and the GitHub Action, that wraps the container published in Dockerhub.
 
 ## Requirements
 
@@ -21,8 +21,8 @@ Smart Check.
   uses: deepsecurity/Deep-Security-Smart-Check@version*
    with:
       # Mandatory
-      DSSC_IMAGE_NAME: myorg/myimage
-      DSSC_SMARTCHECK_HOST: myorg.com
+      DSSC_IMAGE_NAME: registryhost/myimage
+      DSSC_SMARTCHECK_HOST: smartcheck.example.com
       DSSC_SMARTCHECK_USER: admin
       DSSC_SMARTCHECK_PASSWORD: 12345
       DSSC_IMAGE_PULL_AUTH: {"username":"<user>","password":"<password>"}
@@ -31,7 +31,7 @@ Smart Check.
       DSSC_INSECURE_SKIP_TLS_VERIFY: true
       DSSC_INSECURE_SKIP_REGISTRY_TLS_VERIFY: true
       DSSC_PREREGISTRY_SCAN: false
-      DSSC_PREREGISTRY_HOST: myorg.com
+      DSSC_PREREGISTRY_HOST: pre-registryhost.com
       DSSC_PREREGISTRY_USER: admin
       DSSC_PREREGISTRY_PASSWORD: 12345
       DSSC_RESULTS_FILE: /results.json
@@ -71,7 +71,7 @@ be given with `DSSC_IMAGE_NAME`.
   - If you're using AWS, you can use this example below: 
 
     ```json
-    '{"aws":{"region":"us-east-1","accessKeyID":"'$AWS_ACCESS_KEY_ID'","secretAccessKey":"'$AWS_SECRET_ACCESS_KEY'"}}'
+    '{"aws":{"region":"us-east-1","accessKeyID":"$AWS_ACCESS_KEY_ID","secretAccessKey":"$AWS_SECRET_ACCESS_KEY"}}'
     ```
   **PS.: ALWAYS use secrets to expose your credentials!**
 
@@ -186,7 +186,7 @@ jobs:
             DSSC_SMARTCHECK_HOST: ${{ secrets.DSSC_SMARTCHECK_HOST }}
             DSSC_SMARTCHECK_USER: ${{ secrets.DSSC_SMARTCHECK_USER }}
             DSSC_SMARTCHECK_PASSWORD: ${{ secrets.DSSC_SMARTCHECK_PASSWORD }}
-            DSSC_IMAGE_PULL_AUTH: ${{ secrets.DSSC_IMAGE_PULL_AUTH }}
+            DSSC_IMAGE_PULL_AUTH: '{"aws":{"region":"us-east-1","accessKeyID":"$AWS_ACCESS_KEY_ID","secretAccessKey":"$AWS_SECRET_ACCESS_KEY"}}'
             DSSC_FINDINGS_THRESHOLD: '{"malware": 999, "vulnerabilities": { "defcon1": 999, "critical": 999, "high": 999 }, "contents": { "defcon1": 999, "critical": 999, "high": 999 }, "checklists": { "defcon1": 999, "critical": 999, "high": 999 }}'
             DSSC_INSECURE_SKIP_TLS_VERIFY: true
             DSSC_INSECURE_SKIP_REGISTRY_TLS_VERIFY: true
@@ -203,7 +203,21 @@ jobs:
             DSSC_FINDINGS_THRESHOLD: '{"malware": 999, "vulnerabilities": { "defcon1": 999, "critical": 999, "high": 999 }, "contents": { "defcon1": 999, "critical": 999, "high": 999 }, "checklists": { "defcon1": 999, "critical": 999, "high": 999 }}'
             DSSC_INSECURE_SKIP_TLS_VERIFY: true
             DSSC_INSECURE_SKIP_REGISTRY_TLS_VERIFY: true
+
+        - name: Cloud One Container Security Scan GCR
+          uses: felipecosta09/Deep-Security-Smart-Check-Scan-Action@version*
+          with:
+            DSSC_IMAGE_NAME: region.gcr.io/projectname/myimage
+            DSSC_SMARTCHECK_HOST: ${{ secrets.DSSC_SMARTCHECK_HOST }}
+            DSSC_SMARTCHECK_USER: ${{ secrets.DSSC_SMARTCHECK_USER }}
+            DSSC_SMARTCHECK_PASSWORD: ${{ secrets.DSSC_SMARTCHECK_PASSWORD }}
+            DSSC_IMAGE_PULL_AUTH: '{"username": "oauth2accesstoken", "password": "${{ secrets.GCP_TOKEN }}"}'
+            DSSC_FINDINGS_THRESHOLD: '{"malware": 999, "vulnerabilities": { "defcon1": 999, "critical": 999, "high": 999 }, "contents": { "defcon1": 999, "critical": 999, "high": 999 }, "checklists": { "defcon1": 999, "critical": 999, "high": 999 }}'
+            DSSC_INSECURE_SKIP_TLS_VERIFY: true
+            DSSC_INSECURE_SKIP_REGISTRY_TLS_VERIFY: true
 ```
+
+**PS.: For GCP users, you'll need to setup your authentication using an Access token and assigning the right permissions, more details here: https://cloud.google.com/container-registry/docs/advanced-authentication#token**
 
 ## Example Workflow Running a Docker Container
 
@@ -221,7 +235,7 @@ jobs:
        steps:
         - name: Deep Security Smart Check
           run: |
-          docker run -v /var/run/docker.sock:/var/run/docker.sock deepsecurity/smartcheck-scan-action --image-name MYREGISTRY/MYIMAGE --smartcheck-host=DSSC_URL --smartcheck-user=DSSC_USER --smartcheck-password=DSSC_PASSSWORD --insecure-skip-tls-verify --insecure-skip-registry-tls-verify --image-pull-auth='{"aws":{"region":"us-east-1","accessKeyID":"'$AWS_ACCESS_KEY_ID'","secretAccessKey":"'$AWS_SECRET_ACCESS_KEY'"}}' --findings-threshold '{"malware": 100, "vulnerabilities": { "defcon1": 100, "critical": 100, "high": 100 }, "contents": { "defcon1": 100, "critical": 100, "high": 100 }, "checklists": { "defcon1": 100, "critical": 100, "high": 100 }}'       
+          docker run deepsecurity/smartcheck-scan-action --image-name registryhost/myimage --smartcheck-host=smartcheck.example.com --smartcheck-user=admin --smartcheck-password=12345 --image-pull-auth='{"username":"<user>","password":"<password>"}'          
 ```
 
 ## Pre-registry scanning
