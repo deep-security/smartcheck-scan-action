@@ -187,7 +187,7 @@ jobs:
             DSSC_SMARTCHECK_USER: ${{ secrets.DSSC_SMARTCHECK_USER }}
             DSSC_SMARTCHECK_PASSWORD: ${{ secrets.DSSC_SMARTCHECK_PASSWORD }}
             DSSC_IMAGE_PULL_AUTH: '{"aws":{"region":"us-east-1","accessKeyID":"$AWS_ACCESS_KEY_ID","secretAccessKey":"$AWS_SECRET_ACCESS_KEY"}}'
-            DSSC_FINDINGS_THRESHOLD: '{"malware": 999, "vulnerabilities": { "defcon1": 999, "critical": 999, "high": 999 }, "contents": { "defcon1": 999, "critical": 999, "high": 999 }, "checklists": { "defcon1": 999, "critical": 999, "high": 999 }}'
+            DSSC_FINDINGS_THRESHOLD: '{"malware": 100, "vulnerabilities": { "defcon1": 100, "critical": 100, "high": 100 }, "contents": { "defcon1": 100, "critical": 100, "high": 100 }, "checklists": { "defcon1": 100, "critical": 100, "high": 100 }}'
             DSSC_INSECURE_SKIP_TLS_VERIFY: true
             DSSC_INSECURE_SKIP_REGISTRY_TLS_VERIFY: true
 
@@ -200,8 +200,7 @@ jobs:
             DSSC_SMARTCHECK_USER: ${{ secrets.DSSC_SMARTCHECK_USER }}
             DSSC_SMARTCHECK_PASSWORD: ${{ secrets.DSSC_SMARTCHECK_PASSWORD }}
             DSSC_IMAGE_PULL_AUTH: '{"username": "${{ secrets.ACR_USER }}","password": "${{ secrets.ACR_PASSWORD }}"}'
-            DSSC_FINDINGS_THRESHOLD: '{"malware": 999, "vulnerabilities": { "defcon1": 999, "critical": 999, "high": 999 }, "contents": { "defcon1": 999, "critical": 999, "high": 999 }, "checklists": { "defcon1": 999, "critical": 999, "high": 999 }}'
-            DSSC_INSECURE_SKIP_TLS_VERIFY: true
+            DSSC_FINDINGS_THRESHOLD: '{"malware": 100, "vulnerabilities": { "defcon1": 100, "critical": 100, "high": 100 }, "contents": { "defcon1": 100, "critical": 100, "high": 100 }, "checklists": { "defcon1": 100, "critical": 100, "high": 100 }}'            DSSC_INSECURE_SKIP_TLS_VERIFY: true
             DSSC_INSECURE_SKIP_REGISTRY_TLS_VERIFY: true
 
         - name: Cloud One Container Security Scan GCR
@@ -212,8 +211,7 @@ jobs:
             DSSC_SMARTCHECK_USER: ${{ secrets.DSSC_SMARTCHECK_USER }}
             DSSC_SMARTCHECK_PASSWORD: ${{ secrets.DSSC_SMARTCHECK_PASSWORD }}
             DSSC_IMAGE_PULL_AUTH: '{"username": "oauth2accesstoken", "password": "${{ secrets.GCP_TOKEN }}"}'
-            DSSC_FINDINGS_THRESHOLD: '{"malware": 999, "vulnerabilities": { "defcon1": 999, "critical": 999, "high": 999 }, "contents": { "defcon1": 999, "critical": 999, "high": 999 }, "checklists": { "defcon1": 999, "critical": 999, "high": 999 }}'
-            DSSC_INSECURE_SKIP_TLS_VERIFY: true
+            DSSC_FINDINGS_THRESHOLD: '{"malware": 100, "vulnerabilities": { "defcon1": 100, "critical": 100, "high": 100 }, "contents": { "defcon1": 100, "critical": 100, "high": 100 }, "checklists": { "defcon1": 100, "critical": 100, "high": 100 }}'            DSSC_INSECURE_SKIP_TLS_VERIFY: true
             DSSC_INSECURE_SKIP_REGISTRY_TLS_VERIFY: true
 ```
 
