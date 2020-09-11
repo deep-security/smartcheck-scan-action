@@ -4,11 +4,11 @@
 
 ## Scan your containers with [Deep Security Smart Check](https://www.trendmicro.com/smartcheck).
 
-This project was built by the [Deep Security Smart Check](trendmicro.com/smartcheck) team to help you to scan your containers in your CI/CD pipeline, you can use as a standalone Docker container published in the [Dockerhub](https://hub.docker.com/r/deepsecurity/smartcheck-scan-action) to scan your images. This tool is also used by the [Deep Security Smart Check plugin for Jenkins](https://plugins.jenkins.io/deepsecurity-smartcheck/) and the GitHub Action, that wraps the container published in Dockerhub.
+This project was built by the [Deep Security Smart Check](trendmicro.com/smartcheck) team to help you to scan your containers in your CI/CD pipeline. You can use the Smartcheck Scan Action as a standalone Docker container published in [Dockerhub](https://hub.docker.com/r/deepsecurity/smartcheck-scan-action) to scan your images. This tool is also used by the [Deep Security Smart Check plugin for Jenkins](https://plugins.jenkins.io/deepsecurity-smartcheck/) and the GitHub Action, which provides a useful wrapper for the container published in Dockerhub for Github Workflow.
 
 ## Requirements
 
-* Have an [Deep Security Smart Check](https://www.trendmicro.com/smartcheck) deployed. [Sign up for free trial now](https://www.trendmicro.com/product_trials/download/index/us/168) if it's not already the case!
+* Have [Deep Security Smart Check](https://www.trendmicro.com/smartcheck) deployed. [Sign up now for a free trial](https://www.trendmicro.com/product_trials/download/index/us/168)!
 * A container image to scan in any [supported Docker Registry](https://deep-security.github.io/smartcheck-docs/admin_docs/admin.html#supported-registries).
 
 ## Usage
