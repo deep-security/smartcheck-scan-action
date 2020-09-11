@@ -2,13 +2,13 @@ name: "Deep Security Smart Check"
 description: "Scan container images with Deep Security Smart Check."
 inputs:
   DSSC_IMAGE_NAME:
-    description: "Container repository, eg myorg/myimage."
+    description: "(MANDATORY) Container repository, eg registryhost/myimage."
     required: true
   DSSC_SMARTCHECK_HOST:
-    description: "Deep Security Smart Check url, eg mydomain.com."
+    description: "(MANDATORY) Deep Security Smart Check url, eg smartcheck.example.com"
     required: true
   DSSC_SMARTCHECK_USER:
-    description: "Deep Security Smart Check username, eg admin."
+    description: "(MANDATORY) Deep Security Smart Check username, eg admin."
     required: true
   DSSC_SMARTCHECK_PASSWORD:
     description: (MANDATORY) Deep Security Smart Check password, eg 12345.
