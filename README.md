@@ -18,7 +18,7 @@ Smart Check.
 
 ```yml
 - name: Deep Security Smart Check
-  uses: deep-security/Deep-Security-Smart-Check@version*
+  uses: deep-security/smartcheck-scan-action@version*
    with:
       # Mandatory
       DSSC_IMAGE_NAME: registryhost/myimage
@@ -180,7 +180,7 @@ jobs:
 
        # AWS Example:
         - name: Deep Security Smart Check Scan ECR
-          uses: deep-security/Deep-Security-Smart-Check@version*
+          uses: deep-security/smartcheck-scan-action@version*
           with:
             DSSC_IMAGE_NAME: accountid.dkr.ecr.region.amazonaws.com/myimage
             DSSC_SMARTCHECK_HOST: ${{ secrets.DSSC_SMARTCHECK_HOST }}
@@ -194,7 +194,7 @@ jobs:
 
         # Azure Example:
         - name: Deep Security Smart Check Scan ACR
-          uses: deep-security/Deep-Security-Smart-Check@version*
+          uses: deep-security/smartcheck-scan-action@version*
           with:
             DSSC_IMAGE_NAME: myrepo.azurecr.io/myimage
             DSSC_SMARTCHECK_HOST: ${{ secrets.DSSC_SMARTCHECK_HOST }}
@@ -207,7 +207,7 @@ jobs:
         
         # GCP Example:
         - name: Deep Security Smart Check Scan GCR
-          uses: deep-security/Deep-Security-Smart-Check-Scan-Action@version*
+          uses: deep-security/smartcheck-scan-action@version*
           with:
             DSSC_IMAGE_NAME: region.gcr.io/projectname/myimage
             DSSC_SMARTCHECK_HOST: ${{ secrets.DSSC_SMARTCHECK_HOST }}
