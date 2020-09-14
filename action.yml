@@ -1,4 +1,4 @@
-name: "Deep Security Smart Check"
+name: "Deep Security Smart Check Scan Action"
 description: "Scan container images with Deep Security Smart Check."
 inputs:
   DSSC_IMAGE_NAME:
