@@ -18,7 +18,7 @@ Smart Check.
 
 ```yml
 - name: Deep Security Smart Check
-  uses: deepsecurity/Deep-Security-Smart-Check@version*
+  uses: deep-security/Deep-Security-Smart-Check@version*
    with:
       # Mandatory
       DSSC_IMAGE_NAME: registryhost/myimage
@@ -73,7 +73,7 @@ be given with `DSSC_IMAGE_NAME`.
     ```json
     '{"aws":{"region":"us-east-1","accessKeyID":"$AWS_ACCESS_KEY_ID","secretAccessKey":"$AWS_SECRET_ACCESS_KEY"}}'
     ```
-  **PS.: ALWAYS use secrets to expose your credentials!**
+  **PS.: ALWAYS use secrets to not expose your credentials!**
 
     See [creating a scan][] in the [Deep Security Smart Check API Reference][]
     for additional registry credentials options.
@@ -180,32 +180,34 @@ jobs:
 
        # AWS Example:
         - name: Deep Security Smart Check Scan ECR
-          uses: deepsecurity/Deep-Security-Smart-Check@version*
+          uses: deep-security/Deep-Security-Smart-Check@version*
           with:
-            DSSC_IMAGE_NAME: myECRrepo/myimage
+            DSSC_IMAGE_NAME: accountid.dkr.ecr.region.amazonaws.com/myimage
             DSSC_SMARTCHECK_HOST: ${{ secrets.DSSC_SMARTCHECK_HOST }}
             DSSC_SMARTCHECK_USER: ${{ secrets.DSSC_SMARTCHECK_USER }}
             DSSC_SMARTCHECK_PASSWORD: ${{ secrets.DSSC_SMARTCHECK_PASSWORD }}
             # You will need to generate an access key and secret for your AWS user
-            DSSC_IMAGE_PULL_AUTH: '{"aws":{"region":"us-east-1","accessKeyID":"$AWS_ACCESS_KEY_ID","secretAccessKey":"$AWS_SECRET_ACCESS_KEY"}}'
+            DSSC_IMAGE_PULL_AUTH: '{"aws":{"region":"us-east-1","accessKeyID":"$AWS_ACCESS_KEY_ID" "secretAccessKey":"$AWS_SECRET_ACCESS_KEY"}}'
             DSSC_FINDINGS_THRESHOLD: '{"malware": 100, "vulnerabilities": { "defcon1": 100, "critical": 100, "high": 100 }, "contents": { "defcon1": 100, "critical": 100, "high": 100 }, "checklists": { "defcon1": 100, "critical": 100, "high": 100 }}'
             DSSC_INSECURE_SKIP_TLS_VERIFY: true
             DSSC_INSECURE_SKIP_REGISTRY_TLS_VERIFY: true
 
         # Azure Example:
         - name: Deep Security Smart Check Scan ACR
-          uses: deepsecurity/Deep-Security-Smart-Check@version*
+          uses: deep-security/Deep-Security-Smart-Check@version*
           with:
             DSSC_IMAGE_NAME: myrepo.azurecr.io/myimage
             DSSC_SMARTCHECK_HOST: ${{ secrets.DSSC_SMARTCHECK_HOST }}
             DSSC_SMARTCHECK_USER: ${{ secrets.DSSC_SMARTCHECK_USER }}
             DSSC_SMARTCHECK_PASSWORD: ${{ secrets.DSSC_SMARTCHECK_PASSWORD }}
             DSSC_IMAGE_PULL_AUTH: '{"username": "${{ secrets.ACR_USER }}","password": "${{ secrets.ACR_PASSWORD }}"}'
-            DSSC_FINDINGS_THRESHOLD: '{"malware": 100, "vulnerabilities": { "defcon1": 100, "critical": 100, "high": 100 }, "contents": { "defcon1": 100, "critical": 100, "high": 100 }, "checklists": { "defcon1": 100, "critical": 100, "high": 100 }}'            DSSC_INSECURE_SKIP_TLS_VERIFY: true
+            DSSC_FINDINGS_THRESHOLD: '{"malware": 100, "vulnerabilities": { "defcon1": 100, "critical": 100, "high": 100 }, "contents": { "defcon1": 100, "critical": 100, "high": 100 }, "checklists": { "defcon1": 100, "critical": 100, "high": 100 }}'            
+            DSSC_INSECURE_SKIP_TLS_VERIFY: true
             DSSC_INSECURE_SKIP_REGISTRY_TLS_VERIFY: true
-
-        - name: Cloud One Container Security Scan GCR
-          uses: felipecosta09/Deep-Security-Smart-Check-Scan-Action@version*
+        
+        # GCP Example:
+        - name: Deep Security Smart Check Scan GCR
+          uses: deep-security/Deep-Security-Smart-Check-Scan-Action@version*
           with:
             DSSC_IMAGE_NAME: region.gcr.io/projectname/myimage
             DSSC_SMARTCHECK_HOST: ${{ secrets.DSSC_SMARTCHECK_HOST }}
@@ -213,14 +215,15 @@ jobs:
             DSSC_SMARTCHECK_PASSWORD: ${{ secrets.DSSC_SMARTCHECK_PASSWORD }}
             # You will need to generate a JSON service account key in GCP and save it as a secret
             DSSC_IMAGE_PULL_AUTH: '{"username": "_json_token", "password": "${{ secrets.GCP_JSON_KEY }}"}'
-            DSSC_FINDINGS_THRESHOLD: '{"malware": 100, "vulnerabilities": { "defcon1": 100, "critical": 100, "high": 100 }, "contents": { "defcon1": 100, "critical": 100, "high": 100 }, "checklists": { "defcon1": 100, "critical": 100, "high": 100 }}'            DSSC_INSECURE_SKIP_TLS_VERIFY: true
+            DSSC_FINDINGS_THRESHOLD: '{"malware": 100, "vulnerabilities": { "defcon1": 100, "critical": 100, "high": 100 }, "contents": { "defcon1": 100, "critical": 100, "high": 100 }, "checklists": { "defcon1": 100, "critical": 100, "high": 100 }}'            
+            DSSC_INSECURE_SKIP_TLS_VERIFY: true
             DSSC_INSECURE_SKIP_REGISTRY_TLS_VERIFY: true
 ```
-The example above demonstrates how to add a Smartcheck Scan action as a step in your Github Worflow. This can be used to scan an image from a container registry in either Google Container Registry, Microsoft Azure Container Registry or Amazon Elastic Container Registry.
+The example above demonstrates how to add a Deep Security Smart Check Scan action as a step in your Github Workflow. This can be used to scan an image from a container registry in either Google Container Registry, Microsoft Azure Container Registry or Amazon Elastic Container Registry.
 
 For Google Container Registry and Microsoft Azure Container Registry, the `username` and `password` required for `DSSC_IMAGE_PULL_AUTH` are the same as the docker login credentials you would use to authenticate to a registry in the provided platform:
 - [Google Cloud Platform](https://cloud.google.com/container-registry/docs/advanced-authentication#json-key)
-- [Microsoft Azure Web Services](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-authentication)
+- [Microsoft Azure](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-authentication)
 
 To authenticate to an Amazon Elastic Container Registry the `DSSC_IMAGE_PULL_AUTH` should be formatted to match the `credentials.aws` object specified in the [Smartcheck API Documentation to create a Scan](https://deep-security.github.io/smartcheck-docs/api/index.html#operation/createScan).
 
