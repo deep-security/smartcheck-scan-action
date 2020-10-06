@@ -18,7 +18,8 @@ Smart Check.
 
 ```yml
 - name: Deep Security Smart Check
-  uses: deepsecurity/Deep-Security-Smart-Check@version*
+  # Be sure to specify the latest version of smartcheck-scan-action
+  uses: deep-security/smartcheck-scan-action@v1.1.0
    with:
       # Mandatory
       DSSC_IMAGE_NAME: registryhost/myimage
@@ -180,7 +181,8 @@ jobs:
 
        # AWS Example:
         - name: Deep Security Smart Check Scan ECR
-          uses: deepsecurity/Deep-Security-Smart-Check@version*
+          # Be sure to specify the latest version of smartcheck-scan-action
+          uses: deep-security/smartcheck-scan-action@v1.1.0
           with:
             DSSC_IMAGE_NAME: myECRrepo/myimage
             DSSC_SMARTCHECK_HOST: ${{ secrets.DSSC_SMARTCHECK_HOST }}
@@ -194,7 +196,8 @@ jobs:
 
         # Azure Example:
         - name: Deep Security Smart Check Scan ACR
-          uses: deepsecurity/Deep-Security-Smart-Check@version*
+          # Be sure to specify the latest version of smartcheck-scan-action
+          uses: deep-security/smartcheck-scan-action@v1.1.0
           with:
             DSSC_IMAGE_NAME: myrepo.azurecr.io/myimage
             DSSC_SMARTCHECK_HOST: ${{ secrets.DSSC_SMARTCHECK_HOST }}
@@ -205,14 +208,15 @@ jobs:
             DSSC_INSECURE_SKIP_REGISTRY_TLS_VERIFY: true
 
         - name: Cloud One Container Security Scan GCR
-          uses: felipecosta09/Deep-Security-Smart-Check-Scan-Action@version*
+          # Be sure to specify the latest version of smartcheck-scan-action
+          uses: deep-security/smartcheck-scan-action@v1.1.0
           with:
             DSSC_IMAGE_NAME: region.gcr.io/projectname/myimage
             DSSC_SMARTCHECK_HOST: ${{ secrets.DSSC_SMARTCHECK_HOST }}
             DSSC_SMARTCHECK_USER: ${{ secrets.DSSC_SMARTCHECK_USER }}
             DSSC_SMARTCHECK_PASSWORD: ${{ secrets.DSSC_SMARTCHECK_PASSWORD }}
             # You will need to generate a JSON service account key in GCP and save it as a secret
-            DSSC_IMAGE_PULL_AUTH: '{"username": "_json_token", "password": "${{ secrets.GCP_JSON_KEY }}"}'
+            DSSC_IMAGE_PULL_AUTH: '{"username": "_json_key", "password": "${{ secrets.GCP_JSON_KEY }}"}'
             DSSC_FINDINGS_THRESHOLD: '{"malware": 100, "vulnerabilities": { "defcon1": 100, "critical": 100, "high": 100 }, "contents": { "defcon1": 100, "critical": 100, "high": 100 }, "checklists": { "defcon1": 100, "critical": 100, "high": 100 }}'            DSSC_INSECURE_SKIP_TLS_VERIFY: true
             DSSC_INSECURE_SKIP_REGISTRY_TLS_VERIFY: true
 ```
