@@ -1,3 +1,4 @@
+
 name: "Deep Security Smart Check Scan Action"
 description: "Scan container images with Deep Security Smart Check."
 inputs:

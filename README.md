@@ -9,6 +9,7 @@ This project was built by the [Deep Security Smart Check](trendmicro.com/smartch
 ## Requirements
 
 * Have [Deep Security Smart Check](https://www.trendmicro.com/smartcheck) deployed. [Sign up now for a free trial](https://www.trendmicro.com/product_trials/download/index/us/168)!
+
 * A container image to scan in any [supported Docker Registry](https://deep-security.github.io/smartcheck-docs/admin_docs/admin.html#supported-registries).
 
 ## Usage
@@ -74,7 +75,7 @@ be given with `DSSC_IMAGE_NAME`.
     '{"aws":{"region":"us-east-1","accessKeyID":"$AWS_ACCESS_KEY_ID","secretAccessKey":"$AWS_SECRET_ACCESS_KEY"}}'
     ```
   **PS.: ALWAYS use secrets to not expose your credentials!**
-
+  
     See [creating a scan][] in the [Deep Security Smart Check API Reference][]
     for additional registry credentials options.
 
